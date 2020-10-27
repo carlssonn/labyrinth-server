@@ -4,22 +4,26 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.WebEncoders.Testing;
 
 namespace labyrinth_server.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class WeatherForecastController : ControllerBase
+    public class LabyrinthController : ControllerBase
     {
+        private LabyrinthContext _context { get; set; }
+
         private static readonly string[] Summaries = new[]
         {
             "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
         };
 
-        private readonly ILogger<WeatherForecastController> _logger;
+        private readonly ILogger<LabyrinthController> _logger;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
+        public LabyrinthController(ILogger<LabyrinthController> logger, LabyrinthContext context)
         {
+            _context = context;
             _logger = logger;
         }
 
@@ -34,6 +38,25 @@ namespace labyrinth_server.Controllers
                 Summary = Summaries[rng.Next(Summaries.Length)]
             })
             .ToArray();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Post()
+        {
+            var scoreBoard = new ScoreBoard {Created = DateTime.Now, Score = 11, UserEmail = "test@gmail.com"};
+
+            try
+            {
+                await _context.ScoreBoard.AddAsync(scoreBoard);
+                await _context.SaveChangesAsync();
+
+                return Accepted("Ok");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
     }
 }
