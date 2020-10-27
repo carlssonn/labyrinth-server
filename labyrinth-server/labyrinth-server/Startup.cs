@@ -30,6 +30,14 @@ namespace labyrinth_server
         {
             services.AddControllers();
 
+
+            services.AddCors(cors => cors.AddPolicy("Labyrinth", x =>
+            {
+                x.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader();
+            }));
+
             //https://docs.microsoft.com/en-us/ef/core/managing-schemas/migrations/projects?tabs=dotnet-core-cli
             //https://stackoverflow.com/questions/55827106/when-configuring-retryonfailure-what-is-the-maxretrydelay-parameter
             services.AddEntityFrameworkNpgsql().AddDbContext<LabyrinthContext>(opt =>
@@ -41,6 +49,7 @@ namespace labyrinth_server
                         x.EnableRetryOnFailure(10, TimeSpan.FromSeconds(5), new List<string>());
                     });
             });
+
 
             services.AddSwaggerGen(x =>
             {
@@ -64,6 +73,9 @@ namespace labyrinth_server
             app.UseRouting();
 
             app.UseAuthorization();
+
+            app.UseCors("Labyrinth");
+
             //app.UseSwagger();
             //app.UseSwaggerUI(x =>
             //{

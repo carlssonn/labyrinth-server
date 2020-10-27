@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.WebEncoders.Testing;
 
 namespace labyrinth_server.Controllers
 {
@@ -45,7 +44,7 @@ namespace labyrinth_server.Controllers
                 {
                     Created = scoreBoard?.Created.ToString("yyyy-MM-dd"),
                     Email = scoreBoard?.UserEmail,
-                    Score = scoreBoard.Score
+                    Score = scoreBoard.Score.ToString()
                 }).ToList();
 
             return leaderBoardViewModels;
@@ -73,7 +72,7 @@ namespace labyrinth_server.Controllers
 
     public class LeaderBoardViewModel
     {
-        public int Score { get; set; }
+        public string Score { get; set; }
         public string Email { get; set; }
         public string Created { get; set; }
     }
