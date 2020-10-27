@@ -28,22 +28,33 @@ namespace labyrinth_server.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<WeatherForecast> Get()
+        public IEnumerable<LeaderBoardViewModel> Get()
         {
-            var rng = new Random();
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            {
-                Date = DateTime.Now.AddDays(index),
-                TemperatureC = rng.Next(-20, 55),
-                Summary = Summaries[rng.Next(Summaries.Length)]
-            })
-            .ToArray();
+            var groups = _context.ScoreBoard
+                .ToList()
+                .GroupBy(x =>
+                {
+                    var shortDate = x.Created.ToShortDateString();
+                    return new { shortDateString = shortDate, x.UserEmail };
+                });
+
+            var leaderBoardViewModels = groups.Select(userGroups => userGroups
+                .OrderByDescending(x => x.Score)
+                .FirstOrDefault())
+                .Select(scoreBoard => new LeaderBoardViewModel
+                {
+                    Created = scoreBoard?.Created.ToString("yyyy-MM-dd"),
+                    Email = scoreBoard?.UserEmail,
+                    Score = scoreBoard.Score
+                }).ToList();
+
+            return leaderBoardViewModels;
         }
 
         [HttpPost]
         public async Task<IActionResult> Post()
         {
-            var scoreBoard = new ScoreBoard {Created = DateTime.Now, Score = 11, UserEmail = "test@gmail.com"};
+            var scoreBoard = new ScoreBoard { Created = DateTime.Now, Score = 99, UserEmail = "test@gmail.com" };
 
             try
             {
@@ -58,5 +69,12 @@ namespace labyrinth_server.Controllers
                 throw;
             }
         }
+    }
+
+    public class LeaderBoardViewModel
+    {
+        public int Score { get; set; }
+        public string Email { get; set; }
+        public string Created { get; set; }
     }
 }
