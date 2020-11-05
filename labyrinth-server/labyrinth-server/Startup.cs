@@ -1,17 +1,13 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 
 namespace labyrinth_server
@@ -24,8 +20,6 @@ namespace labyrinth_server
         }
 
         public IConfiguration Configuration { get; }
-
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
@@ -50,11 +44,11 @@ namespace labyrinth_server
                     });
             });
 
-
             services.AddSwaggerGen(x =>
             {
                 x.SwaggerDoc("v1", new OpenApiInfo {Title = "Labyrinth", Version = "v1"});
             });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -67,30 +61,14 @@ namespace labyrinth_server
 
             InitializeDatabase(app);
 
-
             app.UseHttpsRedirection();
-
             app.UseRouting();
-
             app.UseAuthorization();
-
             app.UseCors("Labyrinth");
-
-            //app.UseSwagger();
-            //app.UseSwaggerUI(x =>
-            //{
-
-            //    x.SwaggerEndpoint("/swagger/v1/swagger.json", "Labyrinth");
-            //    x.OAuthClientId("Labyrinth");
-            //});
-
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
-
-            //app.UseMvc();
         }
 
 
